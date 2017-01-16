@@ -6,6 +6,7 @@
 # Shopify which is likely the biggest user of liquid in the world which something to the tune of several
 # million Template#render calls a day.
 
+require_relative 'shopify/liquid'
 require_relative 'shopify/database'
 
 class ThemeRunner
