@@ -3,6 +3,6 @@ require_relative 'support/theme_runner.rb'
 
 profiler = ThemeRunner.new
 
-Benchmark.liquid("parse & run") do
+Benchmark.liquid("parse_and_render") do
   profiler.run
 end

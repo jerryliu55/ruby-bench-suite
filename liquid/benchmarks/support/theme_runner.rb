@@ -70,4 +70,52 @@ class ThemeRunner
       content_for_layout
     end
   end
+
+  # the following 3 methods are for when we want to benchmark just the 'render'
+  def compile_tests
+    # Dup assigns because will make some changes to them
+    assigns = Database.tables.dup
+
+    @compiled_tests = []
+    @tests.each do |liquid, layout, template_name|
+      # Compute page_tempalte outside of profiler run, uninteresting to profiler
+      page_template = File.basename(template_name, File.extname(template_name))
+      @compiled_tests << compile_and_save(liquid, layout, assigns, page_template, template_name)
+    end
+  end
+
+  def compile_and_save(template, layout, assigns, page_template, template_file)
+    tmpl = Liquid::Template.new
+    tmpl.assigns['page_title'] = 'Page title'
+    tmpl.assigns['template'] = page_template
+    tmpl.registers[:file_system] = ThemeRunner::FileSystem.new(File.dirname(template_file))
+
+    parsed_template = tmpl.parse(template).dup
+    content_for_layout = tmpl.render!(assigns)
+    parsed_layout = tmpl.parse(layout)
+
+    if layout
+      {'tmpl' => parsed_template, 'assigns' => assigns, 'layout' => parsed_layout}
+    else
+      {'tmpl' => parsed_template, 'assigns' => assigns}
+    end
+  end
+
+  def benchmark_render
+    tests = @compiled_tests.dup
+
+    tests.each do |test|
+      # layout could be nil
+      tmpl = test['tmpl']
+      assigns = test['assigns']
+      layout = test['layout']
+
+      if layout
+        assigns['content_for_layout'] = tmpl.render!(assigns)
+        tmpl.render!(assigns)
+      else
+        tmpl.render!(assigns)
+      end
+    end
+  end
 end
