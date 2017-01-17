@@ -14,14 +14,14 @@ module Benchmark
       end
 
       entry = report.entries.first
-      stddev_percentage = (entry.ips_sd / entry.ips) * 100
+      # stddev_percentage = (entry.ips_sd / entry.ips) * 100
 
       output = {
         label: label,
         version: ::Liquid::VERSION.to_s,
         iterations_per_second: entry.ips,
         iterations_per_second_standard_deviation: entry.ips_sd,
-        iterations_per_second_standard_deviation_percentage: stddev_percentage,
+        # iterations_per_second_standard_deviation_percentage: stddev_percentage,
         total_allocated_objects_per_iteration: get_total_allocated_objects(&block)
       }.to_json
 

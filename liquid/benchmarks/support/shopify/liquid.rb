@@ -1,4 +1,4 @@
-$:.unshift __dir__ + '/../../lib'
+# $:.unshift __dir__ + '/../../lib'
 # require_relative '../../lib/liquid'
 
 require_relative 'comment_form'

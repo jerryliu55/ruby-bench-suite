@@ -34,8 +34,6 @@ class ThemeRunner
   end
 
   def compile
-    # Dup assigns because will make some changes to them
-
     @tests.each do |liquid, layout, template_name|
       tmpl = Liquid::Template.new
       tmpl.parse(liquid)
@@ -91,20 +89,18 @@ class ThemeRunner
     tmpl.registers[:file_system] = ThemeRunner::FileSystem.new(File.dirname(template_file))
 
     parsed_template = tmpl.parse(template).dup
-    content_for_layout = tmpl.render!(assigns)
+    tmpl.render!(assigns)
     parsed_layout = tmpl.parse(layout)
 
     if layout
-      {'tmpl' => parsed_template, 'assigns' => assigns, 'layout' => parsed_layout}
+      { 'tmpl' => parsed_template, 'assigns' => assigns, 'layout' => parsed_layout }
     else
-      {'tmpl' => parsed_template, 'assigns' => assigns}
+      { 'tmpl' => parsed_template, 'assigns' => assigns }
     end
   end
 
   def benchmark_render
-    tests = @compiled_tests.dup
-
-    tests.each do |test|
+    @compiled_tests.each do |test|
       # layout could be nil
       tmpl = test['tmpl']
       assigns = test['assigns']
