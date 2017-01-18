@@ -1,11 +1,13 @@
 #
 # Liquid Benchmark driver
 #
+require 'digest'
+require 'net/http'
 require 'json'
 require 'pathname'
 require 'optparse'
 
-RAW_URL = ''
+RAW_URL = 'https://raw.githubusercontent.com/ruby-bench/ruby-bench-suite/master/liquid/benchmarks/'
 
 class BenchmarkDriver
   def self.benchmark(options)
@@ -37,11 +39,53 @@ class BenchmarkDriver
     output = measure(script)
     return unless output
 
+    request = Net::HTTP::Post.new('/benchmark_runs')
+    request.basic_auth(ENV["API_NAME"], ENV["API_PASSWORD"])
+
+    submit = {
+      'benchmark_type[category]' => output["label"],
+      'benchmark_type[script_url]' => "#{RAW_URL}#{path.basename}",
+      'benchmark_type[digest]' => generate_digest(path),
+      'benchmark_run[environment]' => "#{`ruby -v; gem -v`.strip}",
+      'repo' => 'liquid',
+      'organization' => 'shopify'
+    }
+
+    request.set_form_data(submit.merge(
+      {
+        "benchmark_run[result][iterations_per_second]" => output["iterations_per_second"].round(3),
+        'benchmark_result_type[name]' => 'Number of iterations per second',
+        'benchmark_result_type[unit]' => 'Iterations per second'
+      }
+    ))
+
+    endpoint.request(request) unless @local
+
+    request.set_form_data(submit.merge(
+      {
+        "benchmark_run[result][total_allocated_objects_per_iteration]" => output["total_allocated_objects_per_iteration"],
+        'benchmark_result_type[name]' => 'Allocated objects',
+        'benchmark_result_type[unit]' => 'Objects'
+      }
+    ))
+
     if @local
       puts output
     else
-      # endpoint.request(request)
+      endpoint.request(request)
       puts "Posting results to Web UI...."
+    end
+  end
+
+  def generate_digest(path)
+    Digest::SHA2.hexdigest("#{File.read(path)}#{`ruby -v; gem -v`}")
+  end
+
+  def endpoint
+    @endpoint ||= begin
+      http = Net::HTTP.new(ENV["API_URL"] || 'rubybench.org', 443)
+      http.use_ssl = true
+      http
     end
   end
 
