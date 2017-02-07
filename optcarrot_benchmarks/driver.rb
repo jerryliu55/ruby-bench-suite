@@ -47,7 +47,8 @@ request.set_form_data({
   'organization' => 'ruby'
 }.merge(initiator_hash))
 
-puts http.request(request).body
+# puts http.request(request).body
+request.body
 puts "Posting results to Web UI...."
 puts "Average FPS: #{avg_fps}"
 puts "Checksum: #{checksum}"
