@@ -24,7 +24,7 @@ end
 avg_fps = results.inject{ |sum, el| sum + el }.to_f / results.size
 checksum = checksums.uniq.first
 
-http = Net::HTTP.new(ENV["API_URL"] || 'rubybench.org', 443)
+http = Net::HTTP.new(ENV["API_URL"] || 'rubybench.org', 3000)
 http.use_ssl = true
 request = Net::HTTP::Post.new('/benchmark_runs')
 request.basic_auth(ENV["API_NAME"], ENV["API_PASSWORD"])
