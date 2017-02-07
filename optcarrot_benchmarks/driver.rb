@@ -48,7 +48,7 @@ request.set_form_data({
 }.merge(initiator_hash))
 
 # puts http.request(request).body
-request.body
+request
 puts "Posting results to Web UI...."
 puts "Average FPS: #{avg_fps}"
 puts "Checksum: #{checksum}"
