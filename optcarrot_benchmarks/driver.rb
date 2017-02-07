@@ -8,7 +8,7 @@ ROM = 'Lan_Master.nes'
 results = []
 checksums = []
 
-3.times do |i|
+1.times do |i|
   output = `ruby #{File.dirname(__FILE__)}/optcarrot/bin/optcarrot --benchmark #{File.dirname(__FILE__)}/optcarrot/examples/#{ROM}`
   fps, checksum = output.split("\n")
   fps = fps[/fps: (.+)/, 1].to_i
@@ -48,7 +48,7 @@ request.set_form_data({
 }.merge(initiator_hash))
 
 # puts http.request(request).body
-request
+puts request.body
 puts "Posting results to Web UI...."
 puts "Average FPS: #{avg_fps}"
 puts "Checksum: #{checksum}"
