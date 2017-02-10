@@ -85,7 +85,7 @@ class BenchmarkDriver
   end
 
   def generate_digest(path)
-    Digest::SHA2.hexdigest("#{File.read(path)}#{`ruby -v; gem -v`}")
+    Digest::SHA2.file("#{path}").hexdigest
   end
 
   def endpoint
