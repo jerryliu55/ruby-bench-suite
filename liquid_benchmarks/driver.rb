@@ -90,7 +90,7 @@ class BenchmarkDriver
 
   def endpoint
     @endpoint ||= begin
-      http = Net::HTTP.new(ENV["API_URL"] || 'rubybench.org', ENV['API_PORT'] || 443)
+      http = Net::HTTP.new(ENV["API_URL"] || 'rubybench.org', 443)
       http.use_ssl = true
       http
     end
